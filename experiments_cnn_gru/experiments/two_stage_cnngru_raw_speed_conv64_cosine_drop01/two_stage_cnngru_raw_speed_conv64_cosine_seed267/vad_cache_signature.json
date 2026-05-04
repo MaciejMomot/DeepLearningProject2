@@ -1,0 +1,21 @@
+{
+  "cache_version": 3,
+  "vad_filter_on_augmented": false,
+  "sample_rate": 16000,
+  "clip_duration_sec": 1.0,
+  "vad_sampling_rate": 16000,
+  "augmentation": "speed_perturbation",
+  "speed_factors": [
+    0.9,
+    1.0,
+    1.1
+  ],
+  "background_noise_prob": 0.7,
+  "background_snr_min_db": 5.0,
+  "background_snr_max_db": 20.0,
+  "preprocessing": "raw",
+  "time_mask_param": 8,
+  "freq_mask_param": 8,
+  "seed": 267,
+  "noise_paths_hash": "40359ec634107822"
+}
