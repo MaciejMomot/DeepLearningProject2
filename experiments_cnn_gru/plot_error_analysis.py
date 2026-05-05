@@ -147,7 +147,9 @@ def plot_confusion_matrix(matrices: list[np.ndarray], labels: list[str],
 
 def plot_learning_curves(histories: list[pd.DataFrame], title: str, outpath: Path,
                          metric_col: str = "val_macro_f1",
-                         train_col: str = "train_macro_f1"):
+                         train_col: str = "train_macro_f1",
+                         test_metric: float | None = None,
+                         test_metric_label: str = "Final test metric (12-class + VAD)"):
     if not histories:
         print(f"  SKIP: no history for {title}")
         return
@@ -209,11 +211,17 @@ def plot_learning_curves(histories: list[pd.DataFrame], title: str, outpath: Pat
         ax.plot([], [], color="gray", linewidth=1.2, linestyle="--",
                 label="Train (individual seeds)", alpha=0.5)
 
+    if test_metric is not None:
+        ax.axhline(test_metric, color="black", linewidth=1.5, linestyle="-.",
+                   alpha=0.85, zorder=6, label=f"{test_metric_label}: {test_metric:.4f}")
+        ax.text(1.3, test_metric + 0.008, f"{test_metric:.4f}",
+                color="black", fontsize=8, va="bottom")
+
     ax.set_xlabel("Epoch")
     ax.set_ylabel("Macro F1-score")
     ax.set_title(title)
     ax.set_xlim(1, min_len)
-    ax.set_ylim(bottom=max(0, mean_val.min() - 0.05))
+    ax.set_ylim(bottom=0.0)
     ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
     ax.legend(loc="lower right", fontsize=8, framealpha=0.9)
     ax.grid(axis="y", alpha=0.3, linestyle="--")
@@ -295,20 +303,21 @@ def main():
     hist_two = load_histories(two_dir)
     plot_learning_curves(
         hist_two,
-        title="CNN+GRU Two-Stage: validation Macro F1 per epoch (30 epochs)",
+        title="CNN+GRU Two-Stage: val. Macro F1 per epoch (11-class model space, 30 ep.)",
         outpath=out / f"fig_lc_twostage.{ext}",
+        test_metric=0.7904,
+        test_metric_label="Final test Macro F1 (12-class + VAD)",
     )
 
     print("\n=== Single-Stage: learning curves ===")
     hist_sing = load_histories(sing_dir)
     plot_learning_curves(
         hist_sing,
-        title="CNN+GRU Single-Stage: validation Macro F1 per epoch (30 epochs)",
+        title="CNN+GRU Single-Stage: validation Macro F1 per epoch (12-class, 30 ep.)",
         outpath=out / f"fig_lc_singlestage.{ext}",
     )
 
     print("\nDone.")
-
 
 if __name__ == "__main__":
     main()
